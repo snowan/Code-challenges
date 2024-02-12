@@ -35,7 +35,7 @@ def print_multibyte_characters(lines, words, characters, file_path):
 def print_default(*args):
     print(f"Lines: {args[0]}, Words: {args[1]}, Characters: {args[2]} file path: {args[3]}")
 
-def print_wc_stats(file_path=None, option='-l'):
+def print_wc_stats(file_path=None, option=None):
     try:
         lines, words, characters, file_path = wc(file_path)
 
@@ -55,7 +55,11 @@ def print_wc_stats(file_path=None, option='-l'):
 if __name__ == "__main__":
     if len(sys.argv) == 3:
         file_path = sys.argv[2]
-        print_wc_stats(file_path, sys.argv[1])
+        option = sys.argv[1]
+        print_wc_stats(file_path, option)
+    elif len(sys.argv) == 2:
+        file_path = sys.argv[1]
+        print_wc_stats(file_path)
     else:
         print("Usage: cat test.txt | python wc.py [option] [file_path]")
         sys.exit(1)
