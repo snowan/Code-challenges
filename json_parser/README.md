@@ -43,6 +43,32 @@ Key: key4, Value: value
 Key: key5, Value: 101
 Valid JSON
 ```
+4. 
+```
+# test valid json
+python3 json_parser/json_parser.py -v Tests/json_parser_tests/step4/valid2.json
+trimmed json {"key":"value","key-n":101,"key-o":{"inner key":"inner value"},"key-l":["list value"]}
+Key: key, Value: value
+Key: key-n, Value: 101
+Key: inner key, Value: inner value
+test 62, {"key":"value","key-n":101,"key-o":{"inner key":"inner value"},"key-l":["list value"]}
+Key: key-o, Value: None
+Key: key-l, Value: ['list value']
+Valid JSON
+
+python3 json_parser/json_parser.py -v Tests/json_parser_tests/step4/valid.json
+trimmed json {"key":"value","key-n":101,"key-o":{},"key-l":[]}
+Key: key, Value: value
+Key: key-n, Value: 101
+test 37, {"key":"value","key-n":101,"key-o":{},"key-l":[]}
+Key: key-o, Value: None
+Key: key-l, Value: []
+Valid JSON
+
+# test invalid json
+python3 json_parser/json_parser.py -v Tests/json_parser_tests/step4/invalid.json
+ValueError: Invalid JSON: Expecting value: line 7 column 13 (char 97)
+```
 #### How to Run unit test 
 
 ```

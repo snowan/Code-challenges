@@ -2,13 +2,15 @@ import argparse
 import sys
 import json
 
+import sys
+
 class JSONParser:
     def __init__(self, input_str):
         self.input_str = input_str
         self.position = 0
+        self.left_parenthese_cnt = 0
 
     def parse(self):
-        # print(f"input {self.input_str}, len {len(self.input_str)}")
         try:
             self.parse_object()
             print("Valid JSON")
@@ -18,19 +20,19 @@ class JSONParser:
             sys.exit(1)
 
     def parse_object(self):
-        # print(f"11 next {self.peek_next_char()} postition {self.position}") 
         self.consume('{')
+        self.left_parenthese_cnt += 1
         self.parse_key_value_pairs()
         self.consume('}')
+        self.left_parenthese_cnt -= 1
         self.check_end_of_input()
-    
+
     def parse_key_value_pairs(self):
         if self.peek_next_char() == '}':
             # Empty object
             return
         else:
             while True:
-                # print(f"next {self.peek_next_char()} postition {self.position}")
                 self.parse_key_value_pair()
                 if self.peek_next_char() == ',':
                     self.consume(',')
@@ -38,25 +40,7 @@ class JSONParser:
                     break
                 else:
                     raise ValueError(f"Expected ',' or '}}', found '{self.peek_next_char()}'")
-    # Step 2
-    # def parse_key_value_pair(self):
-    #     key = self.parse_string()
-    #     self.consume(':')
-    #     value = self.parse_string()
-    #     # You can handle the key-value pair as needed, for now, we just print them
-    #     print(f"Key: {key}, Value: {value}")
 
-    # def parse_string(self):
-    #     self.consume('"')
-    #     start_position = self.position
-    #     while self.position < len(self.input_str) and self.input_str[self.position] != '"':
-    #         self.position += 1
-    #     if self.position == len(self.input_str):
-    #         raise ValueError("Unterminated string")
-    #     value = self.input_str[start_position:self.position]
-    #     self.position += 1  # Consume the closing quote
-    #     return value
-    
     def parse_key_value_pair(self):
         key = self.parse_string()
         self.consume(':')
@@ -74,6 +58,10 @@ class JSONParser:
             return self.parse_boolean()
         elif next_char == 'n':
             return self.parse_null()
+        elif next_char == '{':
+            return self.parse_object()
+        elif next_char == '[':
+            return self.parse_array()
         else:
             raise ValueError(f"Invalid value starting with '{next_char}'")
 
@@ -119,6 +107,29 @@ class JSONParser:
         self.consume('l')
         return None
 
+    def parse_array(self):
+        self.consume('[')
+        elements = self.parse_array_elements()
+        self.consume(']')
+        return elements
+
+    def parse_array_elements(self):
+        elements = []
+        if self.peek_next_char() == ']':
+            # Empty array
+            return elements
+        else:
+            while True:
+                element = self.parse_value()
+                elements.append(element)
+                if self.peek_next_char() == ',':
+                    self.consume(',')
+                elif self.peek_next_char() == ']':
+                    break
+                else:
+                    raise ValueError(f"Expected ',' or ']', found '{self.peek_next_char()}'")
+        return elements
+
     def consume(self, expected_char):
         if self.position < len(self.input_str) and self.input_str[self.position] == expected_char:
             self.position += 1
@@ -126,13 +137,13 @@ class JSONParser:
             raise ValueError(f"Expected '{expected_char}', found '{self.input_str[self.position]}'")
 
     def check_end_of_input(self):
-        if self.position < len(self.input_str):
+        # print(f"test {self.position}, {self.input_str}")
+        if self.position < len(self.input_str) and self.left_parenthese_cnt == 0:
             raise ValueError(f"Unexpected character '{self.input_str[self.position]}' after JSON object")
-        
-    def peek_next_char(self):
-        if self.position < len(self.input_str):
-            # print(f"peek next char {self.input_str[self.position]}")
-            return self.input_str[self.position]
+
+    def peek_next_char(self, offset=0):
+        if self.position + offset < len(self.input_str):
+            return self.input_str[self.position + offset]
         else:
             return None
 
@@ -154,6 +165,7 @@ def main():
     with open(args.filename, "r") as file:
         json_content = file.read()
         trimmed_json = trim_json(json_content)
+        print(f"trimmed json {trimmed_json}")
 
     if args.validate:
         json_parser = JSONParser(trimmed_json)
