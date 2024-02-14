@@ -33,7 +33,16 @@ python3 json_parser/json_parser.py -v Tests/json_parser_tests/step2/invalid2.jso
 ValueError: Invalid JSON: Expecting property name enclosed in double quotes: line 3 column 3 (char 22)
 ```
 3.
-
+```
+# test valid json
+python3 json_parser/json_parser.py -v Tests/json_parser_tests/step3/valid.json 
+Key: key1, Value: True
+Key: key2, Value: False
+Key: key3, Value: None
+Key: key4, Value: value
+Key: key5, Value: 101
+Valid JSON
+```
 #### How to Run unit test 
 
 ```
