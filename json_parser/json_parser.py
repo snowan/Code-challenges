@@ -38,13 +38,44 @@ class JSONParser:
                     break
                 else:
                     raise ValueError(f"Expected ',' or '}}', found '{self.peek_next_char()}'")
+    # Step 2
+    # def parse_key_value_pair(self):
+    #     key = self.parse_string()
+    #     self.consume(':')
+    #     value = self.parse_string()
+    #     # You can handle the key-value pair as needed, for now, we just print them
+    #     print(f"Key: {key}, Value: {value}")
 
+    # def parse_string(self):
+    #     self.consume('"')
+    #     start_position = self.position
+    #     while self.position < len(self.input_str) and self.input_str[self.position] != '"':
+    #         self.position += 1
+    #     if self.position == len(self.input_str):
+    #         raise ValueError("Unterminated string")
+    #     value = self.input_str[start_position:self.position]
+    #     self.position += 1  # Consume the closing quote
+    #     return value
+    
     def parse_key_value_pair(self):
         key = self.parse_string()
         self.consume(':')
-        value = self.parse_string()
+        value = self.parse_value()
         # You can handle the key-value pair as needed, for now, we just print them
         print(f"Key: {key}, Value: {value}")
+
+    def parse_value(self):
+        next_char = self.peek_next_char()
+        if next_char == '"':
+            return self.parse_string()
+        elif next_char.isdigit() or (next_char == '-' and self.peek_next_char(1).isdigit()):
+            return self.parse_number()
+        elif next_char == 't' or next_char == 'f':
+            return self.parse_boolean()
+        elif next_char == 'n':
+            return self.parse_null()
+        else:
+            raise ValueError(f"Invalid value starting with '{next_char}'")
 
     def parse_string(self):
         self.consume('"')
@@ -56,6 +87,37 @@ class JSONParser:
         value = self.input_str[start_position:self.position]
         self.position += 1  # Consume the closing quote
         return value
+
+    def parse_number(self):
+        start_position = self.position
+        while self.position < len(self.input_str) and (self.input_str[self.position].isdigit() or self.input_str[self.position] == '.'):
+            self.position += 1
+        value = self.input_str[start_position:self.position]
+        return float(value) if '.' in value else int(value)
+
+    def parse_boolean(self):
+        if self.input_str[self.position] == 't':
+            self.consume('t')
+            self.consume('r')
+            self.consume('u')
+            self.consume('e')
+            return True
+        elif self.input_str[self.position] == 'f':
+            self.consume('f')
+            self.consume('a')
+            self.consume('l')
+            self.consume('s')
+            self.consume('e')
+            return False
+        else:
+            raise ValueError(f"Invalid boolean value")
+
+    def parse_null(self):
+        self.consume('n')
+        self.consume('u')
+        self.consume('l')
+        self.consume('l')
+        return None
 
     def consume(self, expected_char):
         if self.position < len(self.input_str) and self.input_str[self.position] == expected_char:

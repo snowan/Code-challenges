@@ -31,6 +31,13 @@ class TestJSONParser(unittest.TestCase):
             parser_invalid.parse()
         self.assertEqual(context.exception.code, 1)
     
+    def test_invalid_json_4(self):
+        invalid_json = '''{"key":true,"key1":False,"key2":null}'''
+        parser_invalid = JSONParser(invalid_json)
+        with self.assertRaises(SystemExit) as context:
+            parser_invalid.parse()
+        self.assertEqual(context.exception.code, 1)
+    
     def test_valid_json_2(self):
         valid_json = '''{"key":"value"}'''
         parser_valid = JSONParser(valid_json)
@@ -40,6 +47,13 @@ class TestJSONParser(unittest.TestCase):
     
     def test_valid_json_3(self):
         valid_json = '''{"key":"value","key2":"value2"}'''
+        parser_valid = JSONParser(valid_json)
+        with self.assertRaises(SystemExit) as context:
+            parser_valid.parse()
+        self.assertEqual(context.exception.code, 0)
+
+    def test_valid_json_4(self):
+        valid_json = '''{"key":"value","key2":101,"key3":null,"key4":true}'''
         parser_valid = JSONParser(valid_json)
         with self.assertRaises(SystemExit) as context:
             parser_valid.parse()
