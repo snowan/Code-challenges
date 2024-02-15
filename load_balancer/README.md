@@ -49,3 +49,58 @@ Response from server: HTTP/1.1 200 OK
 
 Hello From Backend Server
 ```
+
+### Step 2 Round Robin 
+1. start a terminal and server 1 
+```
+python3 load_balancer/backend_server_5001.py
+ * Serving Flask app 'backend_server_5001'
+```
+2. start a new terminal and server 2
+```
+python3 load_balancer/backend_server_5002.py
+ * Serving Flask app 'backend_server_5002'
+```
+3. start a new terminal and load balancer
+```
+python3 load_balancer/round_robin_lb.py
+Load Balancer is listening on ('localhost', 8082)
+```
+4. test round robin 
+```
+# curl from 8082 multiple times and monitor lb output
+curl http://localhost:8082/ --output -
+
+# output from lb, requests hit server 1 and server2 round robin
+python3 load_balancer/round_robin_lb.py
+Load Balancer is listening on ('localhost', 8082)
+Received request from ('127.0.0.1', 60753)
+GET / HTTP/1.1
+Host: localhost:8082
+User-Agent: curl/8.1.2
+Accept: */*
+
+Response from server: Hello from Backend Server 5001!
+Received request from ('127.0.0.1', 60777)
+GET / HTTP/1.1
+Host: localhost:8082
+User-Agent: curl/8.1.2
+Accept: */*
+
+Response from server: Hello from Backend Server 5002!
+Received request from ('127.0.0.1', 60831)
+GET / HTTP/1.1
+Host: localhost:8082
+User-Agent: curl/8.1.2
+Accept: */*
+
+Response from server: Hello from Backend Server 5001!
+Received request from ('127.0.0.1', 60835)
+GET / HTTP/1.1
+Host: localhost:8082
+User-Agent: curl/8.1.2
+Accept: */*
+
+
+Response from server: Hello from Backend Server 5002!
+```
