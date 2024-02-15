@@ -1,4 +1,4 @@
-### Load balancer
+## Load balancer
 
 [build a Load Balancer](https://codingchallenges.fyi/challenges/challenge-load-balancer)
 
@@ -10,6 +10,7 @@ This project is to build a load balancer that meets:
 - Handle a server going offline (failing a health check)
 - Handle a server coming back online (passing a health check)
 
+### Step 1
 1. start terminal and backend_server `python3 backend_server.py` 
 ```
 python3 load_balancer/backend_server.py            
