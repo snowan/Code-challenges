@@ -105,3 +105,48 @@ Accept: */*
 
 Response from server: Hello from Backend Server 5002!
 ```
+
+### Step 3: add health check 
+Similar as step 2 
+
+output from lb
+```
+Response from server: Hello from Backend Server 5002!
+Performing health check...
+Server ('localhost', 5001) is healthy.
+Server ('localhost', 5002) is healthy.
+Server ('localhost', 5003) is healthy.
+Performing health check...
+Server ('localhost', 5001) is healthy.
+Server ('localhost', 5002) is healthy.
+Server ('localhost', 5003) is healthy.
+Performing health check...
+Server ('localhost', 5001) is healthy.
+Server ('localhost', 5002) is healthy.
+Server ('localhost', 5003) is healthy.
+Performing health check...
+```
+- modify server health return code and message, you can get unhealth status, and it will not route to unhealth server when make requests
+```
+Performing health check...
+Server ('localhost', 5001) is healthy.
+Server ('localhost', 5002) is healthy.
+Server ('localhost', 5003) is unhealthy (status code: 500).
+Performing health check...
+Server ('localhost', 5001) is healthy.
+Server ('localhost', 5002) is healthy.
+Server ('localhost', 5003) is unhealthy (status code: 500).
+Performing health check...
+Server ('localhost', 5001) is healthy.
+Server ('localhost', 5002) is healthy.
+Server ('localhost', 5003) is unhealthy (status code: 500).
+```
+
+- run parallel with `curl http://localhost:8085/ & curl http://localhost:8085/ & curl http://localhost:8085/ &`
+```
+Response from server: Hello from Backend Server 5003!
+
+Response from server: Hello from Backend Server 5001!
+
+Response from server: Hello from Backend Server 5002!
+```
